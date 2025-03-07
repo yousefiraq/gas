@@ -39,45 +39,41 @@
         </div>
     </div>
 
-    <!-- إضافة Firebase -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <!-- Firebase SDK v9 -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
+        import { getDatabase, ref, push, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js";
 
-    <script>
-        // تكوين Firebase
         const firebaseConfig = {
-            apiKey: "AIzaSyDKjlATm8_ip7olBhadROhqodFOAhgJaSw",
-            authDomain: "gas-fded4.firebaseapp.com",
-            projectId: "gas-fded4",
-            storageBucket: "gas-fded4.appspot.com",
-            messagingSenderId: "452703999347",
-            appId: "1:452703999347:web:f971e6b75a6a125e41e106",
-            measurementId: "G-L0PL0MG0ZH"
+            apiKey: "AIzaSyBf9FqPGe73X7OM3YoYk3GRtEy6x4U1low",
+            authDomain: "gaz-delivery-1.firebaseapp.com",
+            projectId: "gaz-delivery-1",
+            storageBucket: "gaz-delivery-1.firebasestorage.app",
+            messagingSenderId: "127631148400",
+            appId: "1:127631148400:web:5eaaed244303ba3bbc3bb5",
+            measurementId: "G-YJ91ZLQKHR"
         };
 
-        // تهيئة Firebase
-        firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
 
-        // إرسال البيانات
-        document.getElementById('dataForm').addEventListener('submit', (e) => {
+        document.getElementById('dataForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
             const userData = {
                 name: document.getElementById('name').value,
                 phone: document.getElementById('phone').value,
                 address: document.getElementById('address').value,
-                timestamp: firebase.database.ServerValue.TIMESTAMP
+                timestamp: serverTimestamp()
             };
 
-            database.ref('users').push(userData)
-                .then(() => {
-                    alert('تم إرسال البيانات بنجاح!');
-                    e.target.reset();
-                })
-                .catch((error) => {
-                    alert('حدث خطأ: ' + error.message);
-                });
+            try {
+                await push(ref(database, 'users'), userData);
+                alert('تم إرسال البيانات بنجاح!');
+                e.target.reset();
+            } catch (error) {
+                alert('حدث خطأ: ' + error.message);
+            }
         });
     </script>
 </body>
