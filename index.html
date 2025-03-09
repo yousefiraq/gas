@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>طلب غاز</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- مكتبات HERE Maps -->
+    <script src="https://js.api.here.com/v3/3.1/mapsjs-core.js"></script>
+    <script src="https://js.api.here.com/v3/3.1/mapsjs-service.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h2>طلب توصيل الغاز</h2>
+        <form id="orderForm">
+            <input type="text" id="name" placeholder="الاسم" required>
+            <input type="text" id="phone" placeholder="رقم الهاتف" required>
+            <input type="text" id="address" placeholder="العنوان" required>
+            <button type="button" id="getLocation">تحديد الموقع</button>
+            <div id="map" style="height: 300px; margin: 20px 0;"></div>
+            <button type="submit">إرسال الطلب</button>
+        </form>
+    </div>
+
+    <script src="firebase-config.js" type="module"></script>
+    <script src="script.js" type="module"></script>
+</body>
+</html>
