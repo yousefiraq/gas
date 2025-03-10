@@ -1,5 +1,8 @@
 import { db, collection, addDoc } from "./firebase-config.js";
 
+// تعيين التاريخ الحالي عند تحميل الصفحة
+document.getElementById('orderDate').value = new Date().toLocaleDateString('ar-IQ');
+
 const platform = new H.service.Platform({
     apikey: "7kAhoWptjUW7A_sSWh3K2qaZ6Lzi4q3xaDRYwFWnCbE"
 });
@@ -10,7 +13,6 @@ let isLocationSet = false;
 const locationButton = document.getElementById("getLocation");
 const spinner = document.querySelector(".loading-spinner");
 
-// تحديد الموقع الجغرافي
 locationButton.addEventListener("click", () => {
     if (isLocationSet) {
         alert("تم تحديد الموقع مسبقاً!");
@@ -58,7 +60,6 @@ locationButton.addEventListener("click", () => {
     }
 });
 
-// عرض الخريطة
 function showMap(lat, lng) {
     const mapContainer = document.getElementById('map');
     const defaultLayers = platform.createDefaultLayers();
@@ -69,20 +70,18 @@ function showMap(lat, lng) {
     new H.map.Marker({ lat: lat, lng: lng }).addTo(map);
 }
 
-// إرسال الطلب
 document.getElementById("orderForm").addEventListener("submit", async (e) => {
     e.preventDefault();
-    spinner.style.display = "block"; // إظهار مؤشر التحميل
+    spinner.style.display = "block";
 
     const formData = {
         name: document.getElementById("name").value.trim(),
         phone: document.getElementById("phone").value.trim(),
         province: document.getElementById("province").value,
         pipes: document.getElementById("pipes").value,
-        orderDate: document.getElementById("orderDate").value
+        orderDate: new Date().toISOString().split('T')[0]
     };
 
-    // التحقق من البيانات
     if (!isLocationSet) {
         spinner.style.display = "none";
         return alert("يجب تحديد الموقع أولاً!");
@@ -96,7 +95,6 @@ document.getElementById("orderForm").addEventListener("submit", async (e) => {
         return alert("يرجى ملء جميع الحقول!");
     }
 
-    // إرسال إلى Firebase
     try {
         await addDoc(collection(db, "orders"), {
             ...formData,
@@ -114,6 +112,6 @@ document.getElementById("orderForm").addEventListener("submit", async (e) => {
         console.error("Error:", error);
         alert("حدث خطأ أثناء الإرسال!");
     } finally {
-        spinner.style.display = "none"; // إخفاء مؤشر التحميل
+        spinner.style.display = "none";
     }
 });
