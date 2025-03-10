@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>طلب غاز - العراق</title>
+    <title>طلب غاز</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
     <link rel="stylesheet" href="styles.css">
     <script src="https://js.api.here.com/v3/3.1/mapsjs-core.js"></script>
@@ -11,20 +11,16 @@
 </head>
 <body>
     <div class="container animate__animated animate__fadeIn">
-        <!-- شعار العراق المتحرك -->
-        <div class="iraq-emblem">
-            <img src="https://i.imgur.com/Q0Uw9gj.jpeg" alt="شعار العراق" class="emblem-animation">
+        <h2 class="animate__animated animate__fadeInDown">طلب توصيل الغاز</h2>
+        <div class="location-permission-info">
+            <p>⚠️ يرجى تمكين صلاحية الموقع في إعدادات المتصفح أو الجهاز.</p>
         </div>
-
-        <h2 class="animate__animated animate__fadeInDown">نظام طلب الغاز المنزلي</h2>
         
         <form id="orderForm">
-            <input type="text" id="name" placeholder="الاسم الثلاثي" required>
+            <input type="text" id="name" placeholder="الاسم الكامل" required>
             
-            <input type="tel" id="phone" 
-                   placeholder="رقم الهاتف (11 رقم)" 
-                   pattern="[0-9]{11}" 
-                   required>
+            <input type="number" id="phone" placeholder="رقم الهاتف (11 رقم)" 
+                   minlength="11" maxlength="11" required>
             
             <select id="province" required>
                 <option value="">اختر المحافظة</option>
@@ -49,24 +45,26 @@
             </select>
             
             <select id="pipes" required>
-                <option value="">عدد الأسطوانات</option>
-                <option value="1">1 أسطوانة</option>
-                <option value="2">2 أسطوانات</option>
-                <option value="3">3 أسطوانات</option>
-                <option value="4">4 أسطوانات</option>
-                <option value="5">5 أسطوانات</option>
-                <option value="6">6 أسطوانات</option>
-                <option value="7">7 أسطوانات</option>
-                <option value="8">8 أسطوانات</option>
-                <option value="9">9 أسطوانات</option>
-                <option value="10">10 أسطوانات</option>
+                <option value="">عدد الأنابيب</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+                <option value="10">10</option>
             </select>
             
-            <button type="button" id="getLocation">📍 تحديد الموقع</button>
-            <div id="map" style="height: 300px;"></div>
+            <input type="date" id="orderDate" required>
+            
+            <button type="button" id="getLocation">تحديد الموقع</button>
+            <div id="map" style="height: 300px; margin: 20px 0;"></div>
             
             <div class="loading-spinner"></div>
-            <button type="submit">🚚 إرسال الطلب</button>
+            <button type="submit">إرسال الطلب</button>
         </form>
     </div>
 
