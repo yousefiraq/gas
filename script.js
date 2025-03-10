@@ -72,14 +72,14 @@ function showMap(lat, lng) {
 // إرسال الطلب
 document.getElementById("orderForm").addEventListener("submit", async (e) => {
     e.preventDefault();
-    spinner.style.display = "block"; // إظهار مؤشر التحميل
+    spinner.style.display = "block";
 
     const formData = {
         name: document.getElementById("name").value.trim(),
         phone: document.getElementById("phone").value.trim(),
         province: document.getElementById("province").value,
         pipes: document.getElementById("pipes").value,
-        orderDate: document.getElementById("orderDate").value
+        orderDate: new Date().toLocaleDateString('ar-IQ'), // التاريخ التلقائي
     };
 
     // التحقق من البيانات
@@ -103,7 +103,7 @@ document.getElementById("orderForm").addEventListener("submit", async (e) => {
             latitude: userLatitude,
             longitude: userLongitude,
             status: "قيد الانتظار",
-            timestamp: new Date()
+            timestamp: new Date() // التاريخ العالمي
         });
         alert("تم إرسال الطلب بنجاح!");
         document.getElementById("orderForm").reset();
@@ -114,6 +114,6 @@ document.getElementById("orderForm").addEventListener("submit", async (e) => {
         console.error("Error:", error);
         alert("حدث خطأ أثناء الإرسال!");
     } finally {
-        spinner.style.display = "none"; // إخفاء مؤشر التحميل
+        spinner.style.display = "none";
     }
 });
