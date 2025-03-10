@@ -1,6 +1,11 @@
 import { db, collection, addDoc } from "./firebase-config.js";
 
-document.getElementById('orderDate').value = new Date().toLocaleDateString('ar-IQ');
+// عرض التاريخ بتنسيق مضغوط
+document.getElementById('orderDate').value = new Date().toLocaleDateString('ar-IQ', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+});
 
 const platform = new H.service.Platform({
     apikey: "7kAhoWptjUW7A_sSWh3K2qaZ6Lzi4q3xaDRYwFWnCbE"
