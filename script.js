@@ -8,6 +8,7 @@ let userLatitude = null;
 let userLongitude = null;
 let isLocationSet = false;
 const locationButton = document.getElementById("getLocation");
+const spinner = document.querySelector(".loading-spinner");
 
 // تحديد الموقع الجغرافي
 locationButton.addEventListener("click", () => {
@@ -18,7 +19,7 @@ locationButton.addEventListener("click", () => {
     
     if (navigator.geolocation) {
         locationButton.disabled = true;
-        locationButton.textContent = "تم تحديد";
+        locationButton.textContent = "جاري التحديد...";
         
         navigator.geolocation.getCurrentPosition(
             (position) => {
@@ -71,22 +72,27 @@ function showMap(lat, lng) {
 // إرسال الطلب
 document.getElementById("orderForm").addEventListener("submit", async (e) => {
     e.preventDefault();
+    spinner.style.display = "block"; // إظهار مؤشر التحميل
 
     const formData = {
         name: document.getElementById("name").value.trim(),
         phone: document.getElementById("phone").value.trim(),
         province: document.getElementById("province").value,
-        pipes: document.getElementById("pipes").value
+        pipes: document.getElementById("pipes").value,
+        orderDate: document.getElementById("orderDate").value
     };
 
     // التحقق من البيانات
     if (!isLocationSet) {
+        spinner.style.display = "none";
         return alert("يجب تحديد الموقع أولاً!");
     }
     if (formData.phone.length !== 11) {
+        spinner.style.display = "none";
         return alert("رقم الهاتف غير صحيح!");
     }
     if (!Object.values(formData).every(value => value)) {
+        spinner.style.display = "none";
         return alert("يرجى ملء جميع الحقول!");
     }
 
@@ -107,5 +113,7 @@ document.getElementById("orderForm").addEventListener("submit", async (e) => {
     } catch (error) {
         console.error("Error:", error);
         alert("حدث خطأ أثناء الإرسال!");
+    } finally {
+        spinner.style.display = "none"; // إخفاء مؤشر التحميل
     }
 });
