@@ -4,15 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>طلب غاز</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
     <link rel="stylesheet" href="styles.css">
     <script src="https://js.api.here.com/v3/3.1/mapsjs-core.js"></script>
     <script src="https://js.api.here.com/v3/3.1/mapsjs-service.js"></script>
 </head>
 <body>
-    <div class="container">
-        <h2>طلب توصيل الغاز</h2>
+    <div class="container animate__animated animate__fadeIn">
+        <h2 class="animate__animated animate__fadeInDown">طلب توصيل الغاز</h2>
         <div class="location-permission-info">
-            <p>.</p>
+            <p>⚠️ يرجى تمكين صلاحية الموقع في إعدادات المتصفح أو الجهاز.</p>
         </div>
         
         <form id="orderForm">
@@ -57,8 +58,12 @@
                 <option value="10">10</option>
             </select>
             
+            <input type="date" id="orderDate" required>
+            
             <button type="button" id="getLocation">تحديد الموقع</button>
             <div id="map" style="height: 300px; margin: 20px 0;"></div>
+            
+            <div class="loading-spinner"></div>
             <button type="submit">إرسال الطلب</button>
         </form>
     </div>
