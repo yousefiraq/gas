@@ -156,30 +156,48 @@ button:hover {
     }
     
     .container {
-        padding: 1.5rem;
+        padding: 0.8rem;
+        margin: 0.3rem;
         border-radius: 1rem;
-        margin: 0.5rem;
     }
     
     h2 {
-        font-size: 1.5rem;
+        font-size: 1.2rem;
+        margin-bottom: 0.8rem;
     }
     
     button {
-        padding: 1rem;
-        font-size: 0.95rem;
+        padding: 0.8rem;
+        font-size: 0.85rem;
     }
     
     #map {
-        height: 220px;
+        height: 180px;
+        margin: 10px 0;
     }
     
     .responsive-logo {
-        max-width: 160px;
+        max-width: 100px;
     }
+    
     .logo-container {
-        padding: 0.5rem;
-        margin-bottom: 1rem;
+        padding: 0.3rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    select, input, button {
+        padding: 0.6rem;
+        font-size: 0.8rem;
+        margin: 0.4rem 0;
+    }
+    
+    .location-permission-info {
+        padding: 0.7rem;
+        margin: 1rem 0;
+    }
+    
+    .location-permission-info p {
+        font-size: 0.75rem;
     }
 }
 
