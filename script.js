@@ -4,70 +4,116 @@ const platform = new H.service.Platform({
     apikey: "7kAhoWptjUW7A_sSWh3K2qaZ6Lzi4q3xaDRYwFWnCbE"
 });
 
-let userLocation = { lat: null, lng: null };
-let isLocationLocked = false;
+let userLatitude = null;
+let userLongitude = null;
+let isLocationSet = false;
+const locationButton = document.getElementById("getLocation");
+const spinner = document.querySelector(".loading-spinner");
 
-document.getElementById("getLocation").addEventListener("click", async () => {
-    if (isLocationLocked) return alert("✓ تم تأكيد الموقع مسبقاً");
+// تحديد الموقع الجغرافي
+locationButton.addEventListener("click", () => {
+    if (isLocationSet) {
+        alert("تم تحديد الموقع مسبقاً!");
+        return;
+    }
     
-    try {
-        const position = await new Promise((resolve, reject) => {
-            navigator.geolocation.getCurrentPosition(resolve, reject, {
+    if (navigator.geolocation) {
+        locationButton.disabled = true;
+        locationButton.textContent = "جاري التحديد...";
+        
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                userLatitude = position.coords.latitude;
+                userLongitude = position.coords.longitude;
+                isLocationSet = true;
+                showMap(userLatitude, userLongitude);
+                locationButton.textContent = "✓ تم التحديد";
+                locationButton.style.backgroundColor = "#28a745";
+            },
+            (error) => {
+                let errorMessage = "خطأ في تحديد الموقع: ";
+                switch(error.code) {
+                    case error.PERMISSION_DENIED:
+                        errorMessage += "تم رفض الإذن. يرجى تمكين الموقع من إعدادات المتصفح.";
+                        break;
+                    case error.POSITION_UNAVAILABLE:
+                        errorMessage += "الموقع غير متاح.";
+                        break;
+                    case error.TIMEOUT:
+                        errorMessage += "انتهى الوقت المخصص للتحديد.";
+                        break;
+                }
+                alert(errorMessage);
+                locationButton.disabled = false;
+                locationButton.textContent = "تحديد الموقع";
+            },
+            {
                 enableHighAccuracy: true,
-                timeout: 10000
-            });
-        });
-        
-        userLocation = {
-            lat: position.coords.latitude,
-            lng: position.coords.longitude
-        };
-        
-        renderMap(userLocation.lat, userLocation.lng);
-        isLocationLocked = true;
-        document.getElementById("getLocation").textContent = "✓ تم تحديد الموقع";
-        
-    } catch (error) {
-        alert(`❌ خطأ: ${error.message || "تأكد من تفعيل الموقع"}`);
+                timeout: 10000,
+                maximumAge: 0
+            }
+        );
+    } else {
+        alert("المتصفح لا يدعم تحديد الموقع.");
     }
 });
 
-function renderMap(lat, lng) {
-    const map = new H.Map(
-        document.getElementById('map'),
-        platform.createDefaultLayers().vector.normal.map,
-        { center: { lat, lng }, zoom: 15 }
-    );
-    new H.map.Marker({ lat, lng }).addTo(map);
+// عرض الخريطة
+function showMap(lat, lng) {
+    const mapContainer = document.getElementById('map');
+    const defaultLayers = platform.createDefaultLayers();
+    const map = new H.Map(mapContainer, defaultLayers.vector.normal.map, {
+        center: { lat: lat, lng: lng },
+        zoom: 14
+    });
+    new H.map.Marker({ lat: lat, lng: lng }).addTo(map);
 }
 
+// إرسال الطلب
 document.getElementById("orderForm").addEventListener("submit", async (e) => {
     e.preventDefault();
-    const spinner = document.querySelector(".loading-spinner");
-    
-    const orderData = {
+    spinner.style.display = "block"; // إظهار مؤشر التحميل
+
+    const formData = {
         name: document.getElementById("name").value.trim(),
         phone: document.getElementById("phone").value.trim(),
         province: document.getElementById("province").value,
         pipes: document.getElementById("pipes").value,
-        timestamp: new Date().toLocaleString("ar-IQ"),
-        location: userLocation
+        orderDate: document.getElementById("orderDate").value
     };
 
     // التحقق من البيانات
-    if (!isLocationLocked) return alert("❗ الرجاء تحديد الموقع أولاً");
-    if (orderData.phone.length !== 11) return alert("📱 رقم الهاتف غير صحيح");
-    
-    try {
-        spinner.style.display = "block";
-        await addDoc(collection(db, "orders"), orderData);
-        alert("✅ تم إرسال الطلب بنجاح");
-        document.getElementById("orderForm").reset();
-        isLocationLocked = false;
-        document.getElementById("getLocation").textContent = "📍 تحديد الموقع";
-    } catch (error) {
-        alert("❌ فشل الإرسال: " + error.message);
-    } finally {
+    if (!isLocationSet) {
         spinner.style.display = "none";
+        return alert("يجب تحديد الموقع أولاً!");
+    }
+    if (formData.phone.length !== 11) {
+        spinner.style.display = "none";
+        return alert("رقم الهاتف غير صحيح!");
+    }
+    if (!Object.values(formData).every(value => value)) {
+        spinner.style.display = "none";
+        return alert("يرجى ملء جميع الحقول!");
+    }
+
+    // إرسال إلى Firebase
+    try {
+        await addDoc(collection(db, "orders"), {
+            ...formData,
+            latitude: userLatitude,
+            longitude: userLongitude,
+            status: "قيد الانتظار",
+            timestamp: new Date()
+        });
+        alert("تم إرسال الطلب بنجاح!");
+        document.getElementById("orderForm").reset();
+        locationButton.textContent = "تحديد الموقع";
+        locationButton.style.backgroundColor = "#218838";
+        isLocationSet = false;
+    } catch (error) {
+        console.error("Error:", error);
+        alert("حدث خطأ أثناء الإرسال!");
+    } finally {
+        spinner.style.display = "none"; // إخفاء مؤشر التحميل
     }
 });
