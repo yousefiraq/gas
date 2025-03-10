@@ -1,6 +1,5 @@
 import { db, collection, addDoc } from "./firebase-config.js";
 
-// تعيين التاريخ الحالي عند تحميل الصفحة
 document.getElementById('orderDate').value = new Date().toLocaleDateString('ar-IQ');
 
 const platform = new H.service.Platform({
