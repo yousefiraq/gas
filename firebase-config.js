@@ -1,8 +1,9 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
 import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
+// استبدل هذه القيم بمعلومات مشروعك من Firebase Console
 const firebaseConfig = {
-    apiKey: "AIzaSyBf9FQ...", // استبدل بمفاتيحك
+    apiKey: "AIzaSyBf9FQ...", // 🔑 مفتاحك هنا
     authDomain: "gaz-delivery-1.firebaseapp.com",
     projectId: "gaz-delivery-1",
     storageBucket: "gaz-delivery-1.appspot.com",
