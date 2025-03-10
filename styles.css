@@ -4,17 +4,20 @@ body {
     background: url('https://i.imgur.com/KpQqytJ.jpeg') no-repeat center center fixed;
     background-size: cover;
     margin: 0;
-    height: 100vh;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .container {
     width: 90%;
     max-width: 600px;
-    margin: 50px auto;
     background: rgba(255, 255, 255, 0.95);
     padding: 25px;
     border-radius: 15px;
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    margin: 20px;
 }
 
 select, input, button {
@@ -31,6 +34,7 @@ button {
     background-color: #218838;
     color: white;
     font-weight: bold;
+    cursor: pointer;
     transition: background 0.3s;
 }
 
@@ -38,7 +42,13 @@ button:hover {
     background-color: #1e7e34;
 }
 
+button:disabled {
+    background-color: #6c757d;
+    cursor: not-allowed;
+}
+
 #map {
     border: 2px solid #ccc;
     border-radius: 10px;
+    background: #f8f9fa;
 }
