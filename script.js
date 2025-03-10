@@ -30,9 +30,26 @@ locationButton.addEventListener("click", () => {
                 locationButton.style.backgroundColor = "#28a745";
             },
             (error) => {
-                alert("خطأ في تحديد الموقع: " + error.message);
+                let errorMessage = "خطأ في تحديد الموقع: ";
+                switch(error.code) {
+                    case error.PERMISSION_DENIED:
+                        errorMessage += "تم رفض الإذن. يرجى تمكين الموقع من إعدادات المتصفح.";
+                        break;
+                    case error.POSITION_UNAVAILABLE:
+                        errorMessage += "الموقع غير متاح.";
+                        break;
+                    case error.TIMEOUT:
+                        errorMessage += "انتهى الوقت المخصص للتحديد.";
+                        break;
+                }
+                alert(errorMessage);
                 locationButton.disabled = false;
                 locationButton.textContent = "تحديد الموقع";
+            },
+            {
+                enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 0
             }
         );
     } else {
