@@ -6,18 +6,33 @@ const platform = new H.service.Platform({
 
 let userLatitude = null;
 let userLongitude = null;
+let isLocationSet = false;
+const locationButton = document.getElementById("getLocation");
 
-document.getElementById("getLocation").addEventListener("click", () => {
+// تحديد الموقع الجغرافي
+locationButton.addEventListener("click", () => {
+    if (isLocationSet) {
+        alert("تم تحديد الموقع مسبقاً!");
+        return;
+    }
+    
     if (navigator.geolocation) {
+        locationButton.disabled = true;
+        locationButton.textContent = "جاري التحديد...";
+        
         navigator.geolocation.getCurrentPosition(
             (position) => {
                 userLatitude = position.coords.latitude;
                 userLongitude = position.coords.longitude;
+                isLocationSet = true;
                 showMap(userLatitude, userLongitude);
-                alert("تم تحديد الموقع بنجاح!");
+                locationButton.textContent = "✓ تم التحديد";
+                locationButton.style.backgroundColor = "#28a745";
             },
             (error) => {
                 alert("خطأ في تحديد الموقع: " + error.message);
+                locationButton.disabled = false;
+                locationButton.textContent = "تحديد الموقع";
             }
         );
     } else {
@@ -25,6 +40,7 @@ document.getElementById("getLocation").addEventListener("click", () => {
     }
 });
 
+// عرض الخريطة
 function showMap(lat, lng) {
     const mapContainer = document.getElementById('map');
     const defaultLayers = platform.createDefaultLayers();
@@ -35,24 +51,29 @@ function showMap(lat, lng) {
     new H.map.Marker({ lat: lat, lng: lng }).addTo(map);
 }
 
-document.getElementById("orderForm").addEventListener("submit", async function(e) {
+// إرسال الطلب
+document.getElementById("orderForm").addEventListener("submit", async (e) => {
     e.preventDefault();
 
     const formData = {
-        name: document.getElementById("name").value,
-        phone: document.getElementById("phone").value,
+        name: document.getElementById("name").value.trim(),
+        phone: document.getElementById("phone").value.trim(),
         province: document.getElementById("province").value,
         pipes: document.getElementById("pipes").value
     };
 
-    if (!Object.values(formData).every(Boolean) || !userLatitude) {
-        return alert("يرجى تعبئة جميع الحقول وتحديد الموقع!");
+    // التحقق من البيانات
+    if (!isLocationSet) {
+        return alert("يجب تحديد الموقع أولاً!");
     }
-
     if (formData.phone.length !== 11) {
-        return alert("رقم الهاتف يجب أن يكون 11 رقمًا!");
+        return alert("رقم الهاتف غير صحيح!");
+    }
+    if (!Object.values(formData).every(value => value)) {
+        return alert("يرجى ملء جميع الحقول!");
     }
 
+    // إرسال إلى Firebase
     try {
         await addDoc(collection(db, "orders"), {
             ...formData,
@@ -62,7 +83,10 @@ document.getElementById("orderForm").addEventListener("submit", async function(e
             timestamp: new Date()
         });
         alert("تم إرسال الطلب بنجاح!");
-        this.reset();
+        document.getElementById("orderForm").reset();
+        locationButton.textContent = "تحديد الموقع";
+        locationButton.style.backgroundColor = "#218838";
+        isLocationSet = false;
     } catch (error) {
         console.error("Error:", error);
         alert("حدث خطأ أثناء الإرسال!");
