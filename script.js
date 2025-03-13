@@ -11,29 +11,36 @@ let userLongitude = null;
 let isLocationSet = false;
 const locationButton = document.getElementById("getLocation");
 const spinner = document.querySelector(".loading-spinner");
+const notesContainer = document.querySelector(".location-permission-info");
 
-// Function to fetch and display notes from Firestore
-async function fetchAndDisplayNotes() {
+async function loadNotes() {
     try {
         const querySnapshot = await getDocs(collection(db, "orders"));
-        const notesContainer = document.querySelector(".location-permission-info");
-        notesContainer.innerHTML = ""; // Clear previous content
+        notesContainer.innerHTML = "";
+
+        if (querySnapshot.empty) {
+            notesContainer.innerHTML = "<p>لا توجد ملاحظات متاحة حالياً</p>";
+            return;
+        }
 
         querySnapshot.forEach((doc) => {
-            const note = doc.data().notes; // Assuming the field name is 'notes'
-            if (note) {
+            const noteData = doc.data();
+            if (noteData.notes) {
                 const noteElement = document.createElement("p");
-                noteElement.textContent = note;
+                noteElement.className = "note-item";
+                noteElement.innerHTML = `
+                    <span class="note-date">${new Date(noteData.timestamp?.toDate()).toLocaleDateString('ar-IQ')}</span>
+                    ${noteData.notes}
+                `;
                 notesContainer.appendChild(noteElement);
             }
         });
+
     } catch (error) {
-        console.error("Error fetching notes:", error);
+        console.error("فشل في جلب البيانات:", error);
+        notesContainer.innerHTML = "<p class='error'>⚠️ تعذر تحميل الملاحظات</p>";
     }
 }
-
-// Call the function to fetch and display notes when the page loads
-fetchAndDisplayNotes();
 
 locationButton.addEventListener("click", () => {
     if (isLocationSet) {
@@ -43,7 +50,7 @@ locationButton.addEventListener("click", () => {
     
     if (navigator.geolocation) {
         locationButton.disabled = true;
-        locationButton.textContent = " تم تحديد ";
+        locationButton.textContent = " جاري التحديد... ";
         
         navigator.geolocation.getCurrentPosition(
             (position) => {
@@ -71,11 +78,7 @@ locationButton.addEventListener("click", () => {
                 locationButton.disabled = false;
                 locationButton.textContent = "تحديد الموقع";
             },
-            {
-                enableHighAccuracy: true,
-                timeout: 10000,
-                maximumAge: 0
-            }
+            { enableHighAccuracy: true, timeout: 10000 }
         );
     } else {
         alert("المتصفح لا يدعم تحديد الموقع.");
@@ -101,25 +104,18 @@ document.getElementById("orderForm").addEventListener("submit", async (e) => {
         phone: document.getElementById("phone").value.trim(),
         province: document.getElementById("province").value,
         pipes: document.getElementById("pipes").value,
-        orderDate: new Date().toISOString().split('T')[0]
+        orderDate: new Date().toISOString()
     };
 
-    if (!isLocationSet) {
+    if (!isLocationSet || formData.phone.length !== 11 || !Object.values(formData).every(Boolean)) {
         spinner.style.display = "none";
-        return alert("يجب تحديد الموقع أولاً!");
-    }
-    if (formData.phone.length !== 11) {
-        spinner.style.display = "none";
-        return alert("رقم الهاتف غير صحيح!");
-    }
-    if (!Object.values(formData).every(value => value)) {
-        spinner.style.display = "none";
-        return alert("يرجى ملء جميع الحقول!");
+        return alert("يرجى تعبئة جميع الحقول بشكل صحيح!");
     }
 
     try {
         await addDoc(collection(db, "orders"), {
             ...formData,
+            notes: "طلب توصيل غاز وطني",
             latitude: userLatitude,
             longitude: userLongitude,
             status: "قيد الانتظار",
@@ -130,6 +126,7 @@ document.getElementById("orderForm").addEventListener("submit", async (e) => {
         locationButton.textContent = "تحديد الموقع";
         locationButton.style.backgroundColor = "#218838";
         isLocationSet = false;
+        loadNotes();
     } catch (error) {
         console.error("Error:", error);
         alert("حدث خطأ أثناء الإرسال!");
@@ -137,3 +134,5 @@ document.getElementById("orderForm").addEventListener("submit", async (e) => {
         spinner.style.display = "none";
     }
 });
+
+loadNotes();
