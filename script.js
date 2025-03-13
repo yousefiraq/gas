@@ -1,11 +1,6 @@
-import { db, collection, addDoc } from "./firebase-config.js";
+import { db, collection, addDoc, getDocs } from "./firebase-config.js";
 
-// عرض التاريخ بتنسيق مضغوط
-document.getElementById('orderDate').value = new Date().toLocaleDateString('ar-IQ', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit'
-});
+document.getElementById('orderDate').value = new Date().toLocaleDateString('ar-IQ');
 
 const platform = new H.service.Platform({
     apikey: "7kAhoWptjUW7A_sSWh3K2qaZ6Lzi4q3xaDRYwFWnCbE"
@@ -16,6 +11,29 @@ let userLongitude = null;
 let isLocationSet = false;
 const locationButton = document.getElementById("getLocation");
 const spinner = document.querySelector(".loading-spinner");
+
+// Function to fetch and display notes from Firestore
+async function fetchAndDisplayNotes() {
+    try {
+        const querySnapshot = await getDocs(collection(db, "orders"));
+        const notesContainer = document.querySelector(".location-permission-info");
+        notesContainer.innerHTML = ""; // Clear previous content
+
+        querySnapshot.forEach((doc) => {
+            const note = doc.data().notes; // Assuming the field name is 'notes'
+            if (note) {
+                const noteElement = document.createElement("p");
+                noteElement.textContent = note;
+                notesContainer.appendChild(noteElement);
+            }
+        });
+    } catch (error) {
+        console.error("Error fetching notes:", error);
+    }
+}
+
+// Call the function to fetch and display notes when the page loads
+fetchAndDisplayNotes();
 
 locationButton.addEventListener("click", () => {
     if (isLocationSet) {
