@@ -1,7 +1,13 @@
-import { db, collection, addDoc, getDocs } from "./firebase-config.js";
+import { db, collection, addDoc, getDocs, query, orderBy } from "./firebase-config.js";
 
-document.getElementById('orderDate').value = new Date().toLocaleDateString('ar-IQ');
+// عرض التاريخ الحالي
+document.getElementById('orderDate').value = new Date().toLocaleDateString('ar-IQ', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+});
 
+// تهيئة الخريطة
 const platform = new H.service.Platform({
     apikey: "7kAhoWptjUW7A_sSWh3K2qaZ6Lzi4q3xaDRYwFWnCbE"
 });
@@ -11,37 +17,8 @@ let userLongitude = null;
 let isLocationSet = false;
 const locationButton = document.getElementById("getLocation");
 const spinner = document.querySelector(".loading-spinner");
-const notesContainer = document.querySelector(".location-permission-info");
 
-async function loadNotes() {
-    try {
-        const querySnapshot = await getDocs(collection(db, "orders"));
-        notesContainer.innerHTML = "";
-
-        if (querySnapshot.empty) {
-            notesContainer.innerHTML = "<p>لا توجد ملاحظات متاحة حالياً</p>";
-            return;
-        }
-
-        querySnapshot.forEach((doc) => {
-            const noteData = doc.data();
-            if (noteData.notes) {
-                const noteElement = document.createElement("p");
-                noteElement.className = "note-item";
-                noteElement.innerHTML = `
-                    <span class="note-date">${new Date(noteData.timestamp?.toDate()).toLocaleDateString('ar-IQ')}</span>
-                    ${noteData.notes}
-                `;
-                notesContainer.appendChild(noteElement);
-            }
-        });
-
-    } catch (error) {
-        console.error("فشل في جلب البيانات:", error);
-        notesContainer.innerHTML = "<p class='error'>⚠️ تعذر تحميل الملاحظات</p>";
-    }
-}
-
+// تحديد الموقع
 locationButton.addEventListener("click", () => {
     if (isLocationSet) {
         alert("تم تحديد الموقع مسبقاً!");
@@ -50,7 +27,7 @@ locationButton.addEventListener("click", () => {
     
     if (navigator.geolocation) {
         locationButton.disabled = true;
-        locationButton.textContent = " جاري التحديد... ";
+        locationButton.textContent = " تم تحديد ";
         
         navigator.geolocation.getCurrentPosition(
             (position) => {
@@ -78,13 +55,18 @@ locationButton.addEventListener("click", () => {
                 locationButton.disabled = false;
                 locationButton.textContent = "تحديد الموقع";
             },
-            { enableHighAccuracy: true, timeout: 10000 }
+            {
+                enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 0
+            }
         );
     } else {
         alert("المتصفح لا يدعم تحديد الموقع.");
     }
 });
 
+// عرض الخريطة
 function showMap(lat, lng) {
     const mapContainer = document.getElementById('map');
     const defaultLayers = platform.createDefaultLayers();
@@ -95,6 +77,7 @@ function showMap(lat, lng) {
     new H.map.Marker({ lat: lat, lng: lng }).addTo(map);
 }
 
+// إرسال الطلب
 document.getElementById("orderForm").addEventListener("submit", async (e) => {
     e.preventDefault();
     spinner.style.display = "block";
@@ -104,29 +87,37 @@ document.getElementById("orderForm").addEventListener("submit", async (e) => {
         phone: document.getElementById("phone").value.trim(),
         province: document.getElementById("province").value,
         pipes: document.getElementById("pipes").value,
-        orderDate: new Date().toISOString()
+        orderDate: new Date().toISOString().split('T')[0]
     };
 
-    if (!isLocationSet || formData.phone.length !== 11 || !Object.values(formData).every(Boolean)) {
+    if (!isLocationSet) {
         spinner.style.display = "none";
-        return alert("يرجى تعبئة جميع الحقول بشكل صحيح!");
+        return alert("يجب تحديد الموقع أولاً!");
+    }
+    if (formData.phone.length !== 11) {
+        spinner.style.display = "none";
+        return alert("رقم الهاتف غير صحيح!");
+    }
+    if (!Object.values(formData).every(value => value)) {
+        spinner.style.display = "none";
+        return alert("يرجى ملء جميع الحقول!");
     }
 
     try {
         await addDoc(collection(db, "orders"), {
             ...formData,
-            notes: "طلب توصيل غاز وطني",
             latitude: userLatitude,
             longitude: userLongitude,
             status: "قيد الانتظار",
-            timestamp: new Date()
+            timestamp: new Date(),
+            notes: "لا توجد ملاحظات" // <-- يمكنك تعديلها أو حذفها
         });
         alert("تم إرسال الطلب بنجاح!");
         document.getElementById("orderForm").reset();
         locationButton.textContent = "تحديد الموقع";
         locationButton.style.backgroundColor = "#218838";
         isLocationSet = false;
-        loadNotes();
+        await fetchAndDisplayNotes(); // تحديث الملاحظات بعد الإرسال
     } catch (error) {
         console.error("Error:", error);
         alert("حدث خطأ أثناء الإرسال!");
@@ -135,4 +126,33 @@ document.getElementById("orderForm").addEventListener("submit", async (e) => {
     }
 });
 
-loadNotes();
+// جلب وعرض الملاحظات
+async function fetchAndDisplayNotes() {
+    try {
+        const notesList = document.getElementById('notesList');
+        notesList.innerHTML = '';
+
+        const q = query(collection(db, "orders"), orderBy("timestamp", "desc"));
+        const querySnapshot = await getDocs(q);
+
+        querySnapshot.forEach((doc) => {
+            const data = doc.data();
+            if (data.notes) {
+                const noteElement = document.createElement('div');
+                noteElement.className = 'note-item';
+                noteElement.innerHTML = `
+                    <p><strong>الاسم:</strong> ${data.name}</p>
+                    <p><strong>التاريخ:</strong> ${new Date(data.timestamp?.toDate()).toLocaleString('ar-IQ')}</p>
+                    <p><strong>الملاحظة:</strong> ${data.notes}</p>
+                `;
+                notesList.appendChild(noteElement);
+            }
+        });
+    } catch (error) {
+        console.error("Error fetching notes:", error);
+        alert("حدث خطأ أثناء جلب الملاحظات!");
+    }
+}
+
+// تحميل الملاحظات عند فتح الصفحة
+window.addEventListener('load', fetchAndDisplayNotes);
