@@ -71,6 +71,7 @@ h2 {
     font-size: 1.8rem;
     margin-bottom: 1.5rem;
     font-weight: 600;
+    text-align: center;
 }
 
 .location-permission-info {
@@ -136,33 +137,6 @@ button:hover {
     margin: 2rem auto;
     animation: spin 1s linear infinite;
     display: none;
-}
-
-.notes-container {
-    margin-top: 2rem;
-    padding: 1rem;
-    background: #f8f9fa;
-    border-radius: 0.8rem;
-    border: 1px solid #e0e0e0;
-}
-
-.notes-container h3 {
-    color: #2d3436;
-    margin-bottom: 1rem;
-    font-size: 1.2rem;
-}
-
-#notesList {
-    max-height: 300px;
-    overflow-y: auto;
-}
-
-.note-item {
-    padding: 0.8rem;
-    margin: 0.5rem 0;
-    background: white;
-    border-radius: 0.5rem;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
 @media (max-width: 768px) {
