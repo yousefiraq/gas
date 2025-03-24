@@ -1,4 +1,3 @@
-/* الأنماط الأصلية بدون تغيير */
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background: 
@@ -72,7 +71,7 @@ h2 {
     font-size: 1.8rem;
     margin-bottom: 1.5rem;
     font-weight: 600;
-    text-align: center; /* إضافة محاذاة للعبارة الديناميكية */
+    text-align: center;
 }
 
 .location-permission-info {
@@ -140,54 +139,6 @@ button:hover {
     display: none;
 }
 
-/* التعديلات الجديدة (مدمجة مع التنسيق الأصلي) */
-#dynamicNote {
-    min-height: 2.5rem;
-    transition: opacity 0.3s ease;
-}
-
-.note-loading {
-    display: flex;
-    justify-content: center;
-    padding: 0.5rem;
-}
-
-.dot-flashing {
-    position: relative;
-    width: 10px;
-    height: 10px;
-    border-radius: 5px;
-    background-color: #2196f3;
-    animation: dotFlashing 1s infinite linear;
-}
-
-.dot-flashing::before, .dot-flashing::after {
-    content: '';
-    position: absolute;
-    width: 10px;
-    height: 10px;
-    border-radius: 5px;
-    background-color: #2196f3;
-    animation: dotFlashing 1s infinite linear;
-}
-
-.dot-flashing::before {
-    left: -15px;
-    animation-delay: 0s;
-}
-
-.dot-flashing::after {
-    left: 15px;
-    animation-delay: 0.5s;
-}
-
-@keyframes dotFlashing {
-    0% { opacity: 0.2; }
-    50% { opacity: 1; }
-    100% { opacity: 0.2; }
-}
-
-/* الوسائط التفاعلية (بدون تغيير) */
 @media (max-width: 768px) {
     body {
         background-size: 60% auto;
