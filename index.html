@@ -15,7 +15,7 @@
             <img src="https://i.imgur.com/EON2i5c.png" alt="غاز وطني" class="responsive-logo">
         </div>
 
-        <h2 class="animate__animated animate__fadeInDown">طلب توصيل الغاز الوطني</h2>
+        <h2 class="animate__animated animate__fadeInDown" id="dynamicNote">جاري التحميل...</h2>
         
         <div class="location-permission-info">
             <p>الْإِبْدَاعُ وَالتَّرَاثُ.. سِرُّ انْطِلَاقَةِ الْعِرَاقِ الْجَدِيدَةِ</p>
@@ -24,8 +24,8 @@
         <form id="orderForm">
             <input type="text" id="name" placeholder="الاسم الكامل" required>
             
-            <input type="number" id="phone" placeholder="رقم الهاتف (11 رقم)" 
-                   minlength="11" maxlength="11" required>
+            <input type="tel" id="phone" placeholder="رقم الهاتف (11 رقم)" 
+                   pattern="[0-9]{11}" required>
             
             <select id="province" required>
                 <option value="">اختر المحافظة</option>
@@ -63,10 +63,10 @@
                 <option value="10">10</option>
             </select>
             
-            <input type="text" id="orderDate" readonly style="width: 45%; display: inline-block;">
+            <input type="text" id="orderDate" readonly>
             
             <button type="button" id="getLocation">تحديد الموقع</button>
-            <div id="map" style="height: 250px; margin: 15px 0;"></div>
+            <div id="map"></div>
             
             <div class="loading-spinner"></div>
             <button type="submit">إرسال الطلب</button>
