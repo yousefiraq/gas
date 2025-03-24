@@ -1,5 +1,20 @@
 import { db, collection, addDoc, realtimeDb, ref, onValue } from "./firebase-config.js";
 
+// ------ جلب العبارة الديناميكية من Firebase ------
+const dynamicNoteElement = document.getElementById('dynamicNote');
+
+function fetchDynamicNote() {
+    const noteRef = ref(realtimeDb, 'orders/A/notes/current_note');
+    
+    onValue(noteRef, (snapshot) => {
+        const noteText = snapshot.val();
+        dynamicNoteElement.textContent = noteText || "خدمة توصيل الغاز الوطني"; // عبارة افتراضية
+    }, (error) => {
+        console.error('خطأ في جلب العبارة:', error);
+        dynamicNoteElement.textContent = "مرحبًا بكم في خدمة التوصيل";
+    });
+}
+
 // ------ تهيئة التاريخ ------
 document.getElementById('orderDate').value = new Date().toLocaleDateString('ar-IQ', {
     year: 'numeric',
@@ -17,21 +32,6 @@ let userLongitude = null;
 let isLocationSet = false;
 const locationButton = document.getElementById("getLocation");
 const spinner = document.querySelector(".loading-spinner");
-
-// ------ جلب العبارة الديناميكية ------
-const dynamicNoteElement = document.getElementById('dynamicNote');
-
-function fetchDynamicNote() {
-    const noteRef = ref(realtimeDb, 'orders/A/notes/current_note');
-    
-    onValue(noteRef, (snapshot) => {
-        const noteText = snapshot.val();
-        dynamicNoteElement.textContent = noteText || "خدمة توصيل الغاز السريعة";
-    }, (error) => {
-        console.error('خطأ في جلب البيانات:', error);
-        dynamicNoteElement.textContent = "مرحبًا بكم في خدمة التوصيل";
-    });
-}
 
 // ------ أحداث تحديد الموقع ------
 locationButton.addEventListener("click", () => {
@@ -90,7 +90,6 @@ document.getElementById("orderForm").addEventListener("submit", async (e) => {
         orderDate: new Date().toISOString()
     };
 
-    // التحقق من البيانات
     if (!isLocationSet || formData.phone.length !== 11 || !Object.values(formData).every(value => value)) {
         spinner.style.display = "none";
         alert("يرجى تعبئة جميع الحقول بشكل صحيح!");
