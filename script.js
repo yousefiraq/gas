@@ -8,7 +8,7 @@ function fetchDynamicNote() {
     
     onValue(noteRef, (snapshot) => {
         const noteText = snapshot.val();
-        dynamicNoteElement.textContent = noteText || "خدمة توصيل الغاز الوطني"; // عبارة افتراضية
+        dynamicNoteElement.textContent = noteText || "خدمة توصيل الغاز الوطني";
     }, (error) => {
         console.error('خطأ في جلب العبارة:', error);
         dynamicNoteElement.textContent = "مرحبًا بكم في خدمة التوصيل";
