@@ -1,6 +1,6 @@
 import { db, collection, addDoc, doc, onSnapshot } from "./firebase-config.js";
 
-// ------ عرض النص الديناميكي من Firestore ------ //
+// ------ استرداد النص الديناميكي من Firestore ------ //
 const fetchDynamicNote = () => {
     const noteRef = doc(db, "orders", "A", "notes", "current_note");
     onSnapshot(noteRef, (snapshot) => {
@@ -16,7 +16,7 @@ const fetchDynamicNote = () => {
 };
 fetchDynamicNote();
 
-// ------ الكود الأصلي (بدون تعديل) ------ //
+// ------ الكود الأصلي ------ //
 document.getElementById('orderDate').value = new Date().toLocaleDateString('ar-IQ', {
     year: 'numeric',
     month: '2-digit',
