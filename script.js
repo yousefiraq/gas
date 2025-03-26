@@ -10,7 +10,7 @@ const fetchDynamicNote = () => {
                 <p style="margin: 0; font-weight: 500;">${noteData.text}</p>
             `;
         } else {
-            console.log("⚠️ لا يوجد نص مخصص في قاعدة البيانات!");
+            console.log("⚠️ لا يوجد نص مخصص!");
         }
     });
 };
@@ -23,7 +23,7 @@ document.getElementById('orderDate').textContent = new Date().toLocaleDateString
     day: 'numeric'
 });
 
-// ------ تحسين دقة تحديد الموقع ------ //
+// ------ تحسين دقة الموقع ------ //
 const platform = new H.service.Platform({
     apikey: "7kAhoWptjUW7A_sSWh3K2qaZ6Lzi4q3xaDRYwFWnCbE"
 });
@@ -71,8 +71,8 @@ locationButton.addEventListener("click", () => {
                 locationButton.textContent = "تحديد الموقع";
             },
             {
-                enableHighAccuracy: true, // تفعيل الدقة العالية
-                timeout: 15000, // زيادة المهلة إلى 15 ثانية
+                enableHighAccuracy: true,
+                timeout: 15000,
                 maximumAge: 0
             }
         );
