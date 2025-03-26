@@ -1,6 +1,6 @@
 import { db, collection, addDoc, doc, onSnapshot } from "./firebase-config.js";
 
-// ------ استرداد النص الديناميكي من Firestore ------ //
+// ------ عرض النص الديناميكي من Firestore ------ //
 const fetchDynamicNote = () => {
     const noteRef = doc(db, "orders", "A", "notes", "current_note");
     onSnapshot(noteRef, (snapshot) => {
@@ -16,13 +16,14 @@ const fetchDynamicNote = () => {
 };
 fetchDynamicNote();
 
-// ------ الكود الأصلي ------ //
-document.getElementById('orderDate').value = new Date().toLocaleDateString('ar-IQ', {
+// ------ تحديث التاريخ بتنسيق عربي ------ //
+document.getElementById('orderDate').textContent = new Date().toLocaleDateString('ar-IQ', {
     year: 'numeric',
-    month: '2-digit',
-    day: '2-digit'
+    month: 'long',
+    day: 'numeric'
 });
 
+// ------ تحسين دقة تحديد الموقع ------ //
 const platform = new H.service.Platform({
     apikey: "7kAhoWptjUW7A_sSWh3K2qaZ6Lzi4q3xaDRYwFWnCbE"
 });
@@ -41,28 +42,28 @@ locationButton.addEventListener("click", () => {
     
     if (navigator.geolocation) {
         locationButton.disabled = true;
-        locationButton.textContent = " تم تحديد ";
+        locationButton.textContent = " جاري التحديد... ";
         
         navigator.geolocation.getCurrentPosition(
             (position) => {
-                userLatitude = position.coords.latitude;
-                userLongitude = position.coords.longitude;
+                userLatitude = position.coords.latitude.toFixed(6); // دقة 6 خانات عشرية
+                userLongitude = position.coords.longitude.toFixed(6);
                 isLocationSet = true;
                 showMap(userLatitude, userLongitude);
-                locationButton.textContent = "✓ تم التحديد";
+                locationButton.textContent = "✓ تم التحديد بدقة";
                 locationButton.style.backgroundColor = "#28a745";
             },
             (error) => {
                 let errorMessage = "خطأ في تحديد الموقع: ";
                 switch(error.code) {
                     case error.PERMISSION_DENIED:
-                        errorMessage += "تم رفض الإذن. يرجى تمكين الموقع من إعدادات المتصفح.";
+                        errorMessage += "يُرجى تفعيل GPS لتحسين الدقة!";
                         break;
                     case error.POSITION_UNAVAILABLE:
                         errorMessage += "الموقع غير متاح.";
                         break;
                     case error.TIMEOUT:
-                        errorMessage += "انتهى الوقت المخصص للتحديد.";
+                        errorMessage += "انتهى الوقت المخصص.";
                         break;
                 }
                 alert(errorMessage);
@@ -70,8 +71,8 @@ locationButton.addEventListener("click", () => {
                 locationButton.textContent = "تحديد الموقع";
             },
             {
-                enableHighAccuracy: true,
-                timeout: 10000,
+                enableHighAccuracy: true, // تفعيل الدقة العالية
+                timeout: 15000, // زيادة المهلة إلى 15 ثانية
                 maximumAge: 0
             }
         );
@@ -80,6 +81,7 @@ locationButton.addEventListener("click", () => {
     }
 });
 
+// ------ عرض الخريطة ------ //
 function showMap(lat, lng) {
     const mapContainer = document.getElementById('map');
     const defaultLayers = platform.createDefaultLayers();
@@ -90,6 +92,7 @@ function showMap(lat, lng) {
     new H.map.Marker({ lat: lat, lng: lng }).addTo(map);
 }
 
+// ------ إرسال الطلب ------ //
 document.getElementById("orderForm").addEventListener("submit", async (e) => {
     e.preventDefault();
     spinner.style.display = "block";
