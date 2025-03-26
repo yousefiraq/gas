@@ -73,6 +73,28 @@ h2 {
     font-weight: 600;
 }
 
+.date-label {
+    background: #e3f2fd;
+    border: 1px solid #bbdefb;
+    padding: 1rem;
+    border-radius: 0.8rem;
+    margin: 1.5rem 0;
+    text-align: center;
+    font-weight: 600;
+    color: #1565c0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.date-label span {
+    margin: 0 0.5rem;
+}
+
+#orderDate {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 1.1rem;
+    color: #2d3436;
+}
+
 .location-permission-info {
     background: #e3f2fd;
     border: 1px solid #bbdefb;
@@ -197,21 +219,14 @@ button:hover {
         margin-right: auto !important;
     }
     
-    #orderDate {
-        width: 40% !important;
-        padding: 0.5rem !important;
-        font-size: 0.75rem !important;
-        display: block !important;
-        margin: 0.3rem auto !important;
-    }
-    
-    .location-permission-info {
+    .date-label {
         padding: 0.7rem !important;
         margin: 1rem 0 !important;
+        font-size: 0.9rem;
     }
     
-    .location-permission-info p {
-        font-size: 0.75rem !important;
+    #orderDate {
+        font-size: 0.9rem !important;
     }
 }
 
