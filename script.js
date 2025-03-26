@@ -42,7 +42,7 @@ locationButton.addEventListener("click", () => {
     
     if (navigator.geolocation) {
         locationButton.disabled = true;
-        locationButton.textContent = " جاري التحديد... ";
+        locationButton.textContent = "تم تحديد";
         
         navigator.geolocation.getCurrentPosition(
             (position) => {
